@@ -29,8 +29,7 @@ Before you begin, ensure you have the following installed on your system:
 First, you need to get the application code. You can clone it from a Git repository or download it directly.
 
 ```bash
-# If using Git (recommended)
-git clone <repository_url> # Replace <repository_url> with the actual URL
+git clone https://github.com/BlasmethiaN/docker-tutorial-app.git
 cd docker-tutorial-app
 
 # If downloading directly, ensure all files are in a directory named 'docker-tutorial-app'
