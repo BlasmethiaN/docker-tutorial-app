@@ -1,35 +1,48 @@
+# docker-compose.yml
 version: '3.8'
 
 services:
   web:
     build:
-      context: .
-      dockerfile: Dockerfile
+      context: .                 # TODO: DOPLŇ: kořenový adresář buildu (obvykle .)
+      dockerfile: Dockerfile     # TODO: DOPLŇ: název Dockerfile (pokud jiný než "Dockerfile")
     ports:
-      - "5000:5000"
+      - "${WEB_PORT_HOST:-____}:${WEB_PORT_CONT:-____}" 
+      # TODO: DOPLŇ oba porty (host:container), např. 5000:5000. 
+      # Můžeš použít i .env proměnné WEB_PORT_HOST / WEB_PORT_CONT.
+
     environment:
-      FLASK_APP: app.py
-      FLASK_RUN_HOST: 0.0.0.0
-      SECRET_KEY: your-secret-key-here
-      DB_HOST: db
-      DB_NAME: todoapp
-      DB_USER: postgres
-      DB_PASSWORD: password
+      # --- FLASK / APP ---
+      FLASK_APP: ____            # TODO: DOPLŇ např. app.py
+      FLASK_RUN_HOST: ____       # TODO: DOPLŇ adresu, aby běželo ven (např. 0.0.0.0)
+      SECRET_KEY: ${SECRET_KEY:?DOPLŇ_TAJNÝ_KLÍČ}
+      # Pozn.: :? vynutí, že proměnná musí být v .env
+
+      # --- DB připojení pro aplikaci ---
+      DB_HOST: ____              # TODO: DOPLŇ název služby DB v Compose (např. db)
+      DB_NAME: ____              # TODO: DOPLŇ jméno databáze (např. todoapp)
+      DB_USER: ____              # TODO: DOPLŇ uživatele (např. postgres)
+      DB_PASSWORD: ${DB_PASSWORD:?DOPLŇ_DB_HESLO}
+
     depends_on:
-      - db
+      - db                       # TODO: nech „db“ nebo změň podle názvu služby níže
+
     volumes:
-      - .:/app
+      - .:/app                   # TODO: DOPLŇ, zda chceš bind-mount zdrojového kódu (ano/ne)
 
   db:
-    image: postgres:13
+    image: postgres:____         # TODO: DOPLŇ verzi Postgresu (např. 13 či 16)
     environment:
-      POSTGRES_DB: todoapp
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ____          # TODO: DOPLŇ jméno DB (musí ladit s DB_NAME výše)
+      POSTGRES_USER: ____        # TODO: DOPLŇ uživatele (musí ladit s DB_USER)
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?DOPLŇ_POSTGRES_HESLO}
+      # Pozn.: DB_PASSWORD (pro app) a POSTGRES_PASSWORD (pro server) mohou být stejné, ale nemusí.
+
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      # TODO: Ujisti se, že existuje soubor init.sql; 
+      # pokud ne, tento řádek dočasně vymaž/zakomentuj.
 
 volumes:
-  postgres_data:
-
+  postgres_data: {}              # TODO: pojmenovaný volume pro persistenci dat
